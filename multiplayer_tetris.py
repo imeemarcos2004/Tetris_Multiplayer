@@ -1,6 +1,7 @@
 import pygame
 import random
 from PIL import Image
+import webbrowser
 
 pygame.init()
 pygame.font.init()
@@ -128,41 +129,41 @@ T = [['.....',
 
 ##############################
 
-def image1(image):
-    # Define the grid
-    image = image
-    grid = [
-    ['.....',
-    '.....',
-    '.00..',
-    '.00..',
-    '.....']
-    ]
+# def image1(image):
+#     # Define the grid
+#     image = image
+#     grid = [
+#     ['.....',
+#     '.....',
+#     '.00..',
+#     '.00..',
+#     '.....']
+#     ]
 
-    # Define pixel colors
-    colors = {
-    '.': (255, 255, 255),  # White
-    '0': (0, 0, 0)          # Black
-    }
+#     # Define pixel colors
+#     colors = {
+#     '.': (255, 255, 255),  # White
+#     '0': (0, 0, 0)          # Black
+#     }
 
-    # Determine image dimensions
-    height = len(grid)
-    width = len(grid[0][0])
+#     # Determine image dimensions
+#     height = len(grid)
+#     width = len(grid[0][0])
 
-    # Create a new image with white background
-    image = Image.new('RGB', (width, height), color='white')
-    pixels = image.load()
+#     # Create a new image with white background
+#     image = Image.new('RGB', (width, height), color='white')
+#     pixels = image.load()
 
-    # Convert grid to image
-    for y in range(height):
-        for x in range(width):
-            pixel_color = colors[grid[0][y][x]]
-            pixels[x, y] = pixel_color
+#     # Convert grid to image
+#     for y in range(height):
+#         for x in range(width):
+#             pixel_color = colors[grid[0][y][x]]
+#             pixels[x, y] = pixel_color
 
-    # Save or display the image
-    image.show()  # Display the image
-    # image.save('output.png')  # Save the image
-# O = image1(image1)
+#     # Save or display the image
+#     image.show()  # Display the image
+#     # image.save('output.png')  # Save the image
+# # O = image1(image1)
 
 
 
@@ -291,7 +292,15 @@ def draw_text_middle2(surface, text, size, color):
     font = pygame.font.SysFont("comicsans", size, bold=True)
     label = font.render(text, 1, color)
 
-    surface.blit(label, (420, 300))
+    surface.blit(label, (420, 200))
+
+def developed_by(surface, text, size, color):
+    font = pygame.font.SysFont("comicsans", size, bold=True)
+    label = font.render(text, 1, color)
+
+    surface.blit(label, (520, 302))
+
+
 
 
 def draw_grid(surface, grid):
@@ -311,6 +320,11 @@ def draw_grid1(surface, grid):
         pygame.draw.line(surface, (128,128,128), (sx, sy + i * block_size1), (sx + play_width1, sy + i * block_size))
         for j in range(len(grid[i])):
             pygame.draw.line(surface, (128,128,128), (sx + j * block_size1, sy ), (sx + j * block_size1, sy + play_height1))
+
+def ding_music():
+    pygame.mixer.init()
+    pygame.mixer.music.load("D:/Tetris_Multiplayer/media/ding.mp3")
+    pygame.mixer.music.play()
 
 def clear_rows(grid, locked):
     inc = 0
@@ -333,6 +347,7 @@ def clear_rows(grid, locked):
                 locked[newyKey] = locked.pop(key)
     return inc
 
+
 def clear_rows1(grid1, locked1):
     inc = 0
     for i in range(len(grid1) -1, -1, -1):
@@ -353,6 +368,8 @@ def clear_rows1(grid1, locked1):
                 newyKey = (x, y + inc)
                 locked1[newyKey] = locked1.pop(key)
     return inc
+
+
 
 
 def draw_next_shape(shape, surface):
@@ -446,9 +463,22 @@ def draw_window(surface, grid, grid1, score=0, score1=0, last_score = 0, last_sc
     draw_grid(surface, grid)
     draw_grid1(surface, grid1)
    
+def play_background_music():
+    pygame.time.Clock()
+    pygame.mixer.init()
+    pygame.mixer.music.load("D:/Tetris_Multiplayer/media/background.mp3")
+    pygame.mixer.music.play()
+    pygame.mixer.music.play(-1)
+
+
+def pause_background_music():
+    pygame.mixer.init()
+    pygame.mixer.music.pause()
+
 
 
 def main(win):
+    play_background_music()
     locked_position = {}
     locked_position1 = {}
     grid = create_grid(locked_position)
@@ -457,7 +487,6 @@ def main(win):
     change_piece = False
     change_piece1 = False
     run = True
-    run2 = True
     current_piece = get_shape()
     next_piece = get_shape()
     current_piece1 = get_shape1()
@@ -471,7 +500,10 @@ def main(win):
     score1 = 0
 
     while run:
+        
+        pygame.mixer.init()
         pygame.init()
+        
         grid = create_grid(locked_position)
         grid1 = create_grid1(locked_position1)
         fall_time += clock.get_rawtime()
@@ -497,12 +529,12 @@ def main(win):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                # pygame.quit()
+                pause_background_music()
                 run = False
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    # pygame.quit()
+                    pause_background_music()
                     run = False
                     
                 if event.key == pygame.K_LEFT:
@@ -570,10 +602,6 @@ def main(win):
             change_piece = False
             score += clear_rows(grid, locked_position) * 10
 
-        # draw_next_shape(next_piece,win)
-        # draw_next_shape1(next_piece1,win)
-
-
         if change_piece1:
             for pos in shape_pos1:
                 p = (pos[0], pos[1])
@@ -582,12 +610,12 @@ def main(win):
             next_piece1 = get_shape1()
             change_piece1 = False
             score1 += clear_rows1(grid1, locked_position1) * 10
-
+            
+        
         draw_next_shape(next_piece, win)
         draw_next_shape1(next_piece1, win)
         draw_window(win, grid1, grid, score, score1)
         pygame.display.update()
-
         
 
         if check_lost(locked_position):
@@ -605,20 +633,37 @@ def main(win):
     draw_next_shape1(next_piece1,win)
     pygame.display.update()
 
+font5 = pygame.font.SysFont(None, 40)
+BLUE = (0, 0, 255)
+def create_link(surface, text, font, color, x, y, url):
+    x = 750
+    y = 315
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect(topleft=(x, y))
+    surface.blit(text_surface, text_rect)
+    link_rect = pygame.Rect(x, y, text_rect.width, text_rect.height)
+    return link_rect, url
+
+
 def main_menu(win):
     pygame.init()
     run = True
     while run:
-        
         win.fill((0,0,0))
-        draw_text_middle2(win, "press any key to play", 60, (255, 255, 255))
+        link_rect, url = create_link(win, "Lovely Jane Colis", font5, BLUE, 50, 50, "https://openai.com")
+        draw_text_middle2(win, "Press Any Key To Play", 60, (255, 255, 255))
+
+        developed_by(win, "Developed by", 30, (255,255,255))
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.display.quit()
-            # if event.type == pygame.K_ESCAPE:
-            #     run = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    pos = pygame.mouse.get_pos()
+                    if link_rect.collidepoint(pos):
+                        webbrowser.open(url)
             if event.type == pygame.KEYDOWN:
                 if event.type == pygame.K_ESCAPE:
                     run = False
@@ -627,7 +672,6 @@ def main_menu(win):
                     main(win)
              
     pygame.display.quit() 
-    # main(win)
 
 win = pygame.display.set_mode((s_width, s_height))
 pygame.display.set_caption('Tetris')
