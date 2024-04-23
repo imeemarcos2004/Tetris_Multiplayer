@@ -650,7 +650,7 @@ def main_menu(win):
     run = True
     while run:
         win.fill((0,0,0))
-        link_rect, url = create_link(win, "Lovely Jane Colis", font5, BLUE, 50, 50, "https://openai.com")
+        link_rect, url = create_link(win, "Lovely Jane Colis", font5, BLUE, 50, 50, "https://www.facebook.com/profile.php?id=100025628571179")
         draw_text_middle2(win, "Press Any Key To Play", 60, (255, 255, 255))
 
         developed_by(win, "Developed by", 30, (255,255,255))
